@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Savings";
+}
+
+@{
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - financeexpert.com</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="card border-0 shadow my-5">
+                <div class="card-body p-5">
+                    <h1 class="font-weight-light text-center">Login to your account!</h1>
+                    <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
+                    <hr />
+                    <form>
+                        <div class="form-group">
+                            <label for="inputAmount">Enter an Amount *</label>
+                            <input type="number"  class="form-control" id="inputAmount" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputYears">Years to save the amount *</label>
+                            <input type="number" id="inputYears" class="form-control" name="years" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="inputInterest">Interest Rate *</label>
+                            <input type="number"  id="inputInterest" class="form-control" name="interest" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="inputReason">Reason to save the amount *</label>
+                            <input type="text" maxlength="255" id="inputReason" class="form-control" name="reason" required />
+                        </div>
+                        <div>
+                            <button class="btn btn-secondary" formmethod="post" type="submit">Calculate</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+}

@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="FinanceLibrary">
+      <HintPath>..\FinanceLibrary\bin\Debug\netstandard2.0\FinanceLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\favicon.ico">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

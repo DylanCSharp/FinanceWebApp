@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using FinanceLibrary;
 
 namespace FinanceWebApp.Controllers
 {
@@ -11,7 +13,15 @@ namespace FinanceWebApp.Controllers
         [HttpGet]
         public IActionResult General()
         {
-            return View();
+            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            {
+                return View();
+            }
+            else
+            {
+                ViewBag.Error = "You have not logged in";
+                return View();
+            }
         }
 
         [HttpPost]
@@ -23,25 +33,63 @@ namespace FinanceWebApp.Controllers
         [HttpGet]
         public IActionResult Home()
         {
-            return View();
+            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            {
+                return View();
+            }
+            else
+            {
+                ViewBag.Error = "You have not logged in";
+                return View();
+            }
         }
 
         [HttpPost]
         public IActionResult Home(double purchase, double deposit, int? interest, int monthsrepay)
         {
-            return RedirectToAction("Car", "Data");
+            return RedirectToAction("Car", "Data"); 
         }
 
         [HttpGet]
         public IActionResult Car()
         {
-            return View();
+            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            {
+                return View();
+            }
+            else
+            {
+                ViewBag.Error = "You have not logged in";
+                return View();
+            }
         }
 
         [HttpPost]
         public IActionResult Car(string modelmake,double purchase, double deposit, int? interest, double insurance)
         {
             return RedirectToAction("Car", "Data");
+        }
+        
+        [HttpGet]
+        public IActionResult Saving()
+        {
+            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            {
+                return View();
+            }
+            else
+            {
+                ViewBag.Error = "You have not logged in";
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Saving(double amount, double years, string reason, double interest)
+        {
+            Saving saving = new Saving(amount, years, reason, interest);
+            ViewBag.Error = saving.MonthsToSave().ToString();
+            return View();
         }
     }
 }

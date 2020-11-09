@@ -56,7 +56,7 @@ namespace FinanceWebApp.Controllers
                     if (validUser == true)
                     {
                         //Showing the user they have logged in
-                        ViewBag.LoggedIn = user.UserFullname.ToString() + ", you are logged in!";
+                        ViewBag.LoggedIn = user.UserFullname.ToString() + ", you are logged in! ";
                         HttpContext.Session.SetString("LoggedInUser", email);
 
                         return View();
@@ -166,6 +166,13 @@ namespace FinanceWebApp.Controllers
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData["LoggedOut"] = "You have been logged out!";
+            return RedirectToAction("Login", "Login");
         }
     }
 }
