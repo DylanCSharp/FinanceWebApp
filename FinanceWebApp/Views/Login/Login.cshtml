@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+@{
+    <!doctype html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="~/css/site.css">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="card border-0 shadow my-5 ">
+                <div class="card-body p-5">
+                    <h1 class="font-weight-light text-center">Login to your account!</h1>
+                    <hr />
+                    <form>
+                        <div class="form-group">
+                            <label for="inputEmail">Email address *</label>
+                            <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" name="email" onfocusout="this.value = removeSpaces(this.value);" required>
+                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword">Password *</label>
+                            <input type="password" class="form-control" id="inputPassword" name="password" onfocusout="this.value = removeSpaces(this.value);" required>
+                        </div>
+                        <div class="form-group text-center">
+                            <label>Dont have an account? <a asp-action="RegisterUser" asp-controller="Login">Click here to Register.</a></label>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" formmethod="post" class="btn btn-secondary">Login</button>
+                        </div>
+                        <div style="height: 30px"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script language="javascript" type="text/javascript">
+        function removeSpaces(string) {
+            return string.split(' ').join('');
+        }
+        </script>
+    </body>
+</html>
+
+}
