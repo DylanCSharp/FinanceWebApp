@@ -54,3 +54,43 @@ $("#seeAnotherField").change(function () {
 });
 $("#seeAnotherField").trigger("change");
 
+
+$("#carField").change(function () {
+	if ($(this).val() == "no") {
+		$('#noCarDiv').show();
+
+
+		$('#yesCarDiv').hide();
+		$('#carmodelmake').removeAttr('required');
+		$('#carmodelmake').removeAttr('data-error');
+		$('#carpurchase').removeAttr('required');
+		$('#carpurchase').removeAttr('data-error');
+		$('#cardeposit').removeAttr('required');
+		$('#cardeposit').removeAttr('data-error');
+		$('#carinterest').removeAttr('required');
+		$('#carinterest').removeAttr('data-error');
+		$('#carinsurance').removeAttr('required');
+		$('#carinsurance').removeAttr('data-error');
+	}
+	else {
+		$('#yesCarDiv').show();
+		$('#carmodelmake').attr('required', '');
+		$('#carmodelmake').attr('data-error', 'This field is required.');
+		$('#carpurchase').attr('required', '');
+		$('#carpurchase').attr('data-error', 'This field is required.');
+		$('#cardeposit').attr('required', '');
+		$('#cardeposit').attr('data-error', 'This field is required.');
+		$('#carinterest').attr('required', '');
+		$('#carinterest').attr('data-error', 'This field is required.');
+		$('#carinsurance').attr('required', '');
+		$('#carinsurance').attr('data-error', 'This field is required.');
+
+
+		$('#noCarDiv').hide();
+	}
+});
+
+$("#carField").trigger("change");
+
+
+

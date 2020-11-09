@@ -33,11 +33,17 @@
                         </div>
                         <div class="form-group" id="buyingDiv">
                             <label for="purchase">Purchase Amount:</label>
-                            <input type="number" class="form-control" id="purchase" name="purchase" >
+                            <input type="number" class="form-control" id="purchase" name="purchase">
                             <label for="deposit">Deposit Amount:</label>
-                            <input type="number" class="form-control" id="deposit" name="deposit" >
+                            <input type="number" class="form-control" id="deposit" name="deposit">
                             <label for="interest">Interest Rate:</label>
-                            <input type="number" class="form-control" id="interest" name="interest" >
+                            <input type="number" class="form-control" id="interest" name="interest">
+                            <label for="sel1">Months to Repay (default of 240):</label>
+                            <select class="form-control" id="sel1" name="monthsrepay">
+                                <option selected="selected" value="240">Select a Value...</option>
+                                <option value="240">240</option>
+                                <option value="360">360</option>
+                            </select>
                         </div>
                         <button type="submit" formmethod="post" class="btn btn-primary">Next</button>
                     </form>

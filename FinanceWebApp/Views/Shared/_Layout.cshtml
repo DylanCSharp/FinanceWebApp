@@ -19,8 +19,9 @@
                 @{
                     if (Context.Session.GetString("LoggedInUser") != null)
                     {
-                        <li><a asp-action="General" asp-controller="Data">New Calculation</a></li>
-                        <li><a asp-action="Saving" asp-controller="Data">Saving Calculation</a></li>
+                        <li><a asp-action="General" asp-controller="Data">Data Expert&trade;</a></li>
+                        <li><a asp-action="Saving" asp-controller="Data">*NEW*<br />Save Expert&trade;</a></li>
+                        <li><a asp-action="SaveList" asp-controller="Data">Save Expert&trade; History</a></li>
                         <li><a asp-action="Logout" asp-controller="Login">Logout</a></li>
                     }
                     else
