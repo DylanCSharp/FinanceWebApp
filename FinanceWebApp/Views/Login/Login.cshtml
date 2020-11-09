@@ -15,6 +15,16 @@
             <div class="card border-0 shadow my-5 ">
                 <div class="card-body p-5">
                     <h1 class="font-weight-light text-center">Login to your account!</h1>
+                    <h4 class="font-weight-light text-center">@TempData["Registered"]</h4>
+                    <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
+                    <h4 class="font-weight-light text-center">
+                        @ViewBag.LoggedIn@if (ViewBag.LoggedIn != null)
+                                        {
+                                            <a asp-action="Index" asp-controller="Home">Back to Home Page</a>
+                                        }
+                    </h4>
+
+                    
                     <hr />
                     <form>
                         <div class="form-group">
