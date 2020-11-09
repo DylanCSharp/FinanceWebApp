@@ -25,63 +25,138 @@ namespace FinanceWebApp.Controllers
         [HttpGet]
         public IActionResult General()
         {
-            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            try
             {
-                return View();
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
+                {
+                    return View();
+                }
+                else
+                {
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["LoginFirst"] = "You have not logged in";
-                return RedirectToAction("Login", "Login");
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
             }
         }
 
         [HttpPost]
-        public IActionResult General(double income, double tax, double groceries, double waterlights, double other, double travel, double phone)
+        public IActionResult General(double income, double tax, double groceries, double waterlights, double travel, double phone, double other)
         {
-            return RedirectToAction("Home", "Data");
+            try
+            {
+                if (income <= 0 || tax <= 0 || groceries <= 0 || waterlights <= 0)
+                {
+                    ViewBag.Error = "Values cannot be 0";
+                    return View();
+                }
+                else
+                {
+                    GeneralExpense.GrossIncome = income;
+                    GeneralExpense.TaxDeducted = tax;
+                    GeneralExpense.Groceries = groceries;
+                    GeneralExpense.WaterLights = waterlights;
+                    GeneralExpense.TravelCosts = travel;
+                    GeneralExpense.PhoneCosts = phone;
+                    GeneralExpense.OtherExpenses = other;
+
+                    return RedirectToAction("Home", "Data");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
+            }
         }
 
         [HttpGet]
         public IActionResult Home()
         {
-            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            try
             {
-                return View();
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
+                {
+                    if (GeneralExpense.GrossIncome <= 0)
+                    {
+                        TempData["GeneralFirst"] = "You need to fill in General Expenses before continuing.";
+                        return RedirectToAction("General", "Data");
+                    }
+                    else
+                    {
+                        return View();
+                    }
+                }
+                else
+                {
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["LoginFirst"] = "You have not logged in";
-                return RedirectToAction("Login", "Login");
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
             }
         }
 
         [HttpPost]
-        public IActionResult Home(double purchase, double deposit, int? interest, int monthsrepay)
+        public IActionResult Home(double purchase, double deposit, double interest, double monthsrepay, double monthlyRent)
         {
-            return RedirectToAction("Car", "Data"); 
+            try
+            {
+                HomeLoan homeLoan = new HomeLoan(purchase, deposit, interest, monthsrepay);
+                RentalExpense rentalExpense = new RentalExpense(monthlyRent);
+
+                return RedirectToAction("Car", "Data");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
+            }
         }
 
         [HttpGet]
         public IActionResult Car()
         {
-            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            try
             {
-                return View();
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
+                {
+                    if (GeneralExpense.GrossIncome <= 0)
+                    {
+                        TempData["GeneralFirst"] = "You need to fill in General Expenses before continuing.";
+                        return RedirectToAction("General", "Data");
+                    }
+                    else
+                    {
+                        return View();
+                    }
+                }
+                else
+                {
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["LoginFirst"] = "You have not logged in";
-                return RedirectToAction("Login", "Login");
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
             }
         }
 
         [HttpPost]
         public IActionResult Car(string modelmake,double purchase, double deposit, int? interest, double insurance)
         {
+            //REMEMBER TO RESET LIBRARY STATS BACK TO 0
             try
             {
-
                 return RedirectToAction("Car", "Data");
             }
             catch (Exception ex)
@@ -94,14 +169,22 @@ namespace FinanceWebApp.Controllers
         [HttpGet]
         public IActionResult Saving()
         {
-            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            try
             {
-                return View();
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
+                {
+                    return View();
+                }
+                else
+                {
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["LoginFirst"] = "You have not logged in";
-                return RedirectToAction("Login", "Login");
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
             }
         }
 
@@ -110,6 +193,12 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                if (amount <= 0 || years <= 0 || interest <= 0)
+                {
+                    ViewBag.Error = "Values cannot be lower than or equal to 0. Please try again!";
+                    return View();
+                }
+
                 Saving saving = new Saving(amount, years, reason, interest);
 
                 SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("FinanceDatabase"));
@@ -139,23 +228,31 @@ namespace FinanceWebApp.Controllers
         [HttpGet]
         public IActionResult SaveList()
         {
-            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            try
             {
-                var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
-                int userID = user.UsersId;
-
-                var history = _context.Savings.Where(x => x.UsersId == userID).FirstOrDefault();
-                if (history == null)
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
-                    ViewBag.History = "No History!";
+                    var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
+                    int userID = user.UsersId;
+
+                    var history = _context.Savings.Where(x => x.UsersId == userID).FirstOrDefault();
+                    if (history == null)
+                    {
+                        ViewBag.History = "No History!";
+                    }
+
+                    return View(_context.Savings.Where(x => x.UsersId.Equals(userID)));
                 }
-                
-                return View(_context.Savings.Where(x => x.UsersId.Equals(userID)));
+                else
+                {
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["LoginFirst"] = "You have not logged in";
-                return RedirectToAction("Login", "Login");
+                ViewBag.History = "Error: " + ex.Message;
+                return View();
             }
         }
     }

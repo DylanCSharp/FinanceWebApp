@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FinanceLibrary
 {
-    public class CarLoan : General
+    public class CarLoan : GeneralExpense
     {
         public CarLoan()
         {

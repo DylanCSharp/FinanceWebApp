@@ -16,10 +16,35 @@
         <div class="container-fluid">
             <div class="card border-0 shadow my-5">
                 <div class="card-body p-5">
-
+                    <h1 class="font-weight-light text-center">Adding Home Loan!</h1>
+                    <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
+                    <hr />
+                    <form class="p-3">
+                        <div class="form-group">
+                            <label for="seeAnotherField">Choose:</label>
+                            <select class="form-control" id="seeAnotherField">
+                                <option value="no">Buying</option>
+                                <option value="yes">Renting</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="rentingDiv">
+                            <label for="otherField">Monthly Rental Amount:</label>
+                            <input type="number" name="monthlyrent" class="form-control" id="otherField">
+                        </div>
+                        <div class="form-group" id="buyingDiv">
+                            <label for="purchase">Purchase Amount:</label>
+                            <input type="number" class="form-control" id="purchase" name="purchase" >
+                            <label for="deposit">Deposit Amount:</label>
+                            <input type="number" class="form-control" id="deposit" name="deposit" >
+                            <label for="interest">Interest Rate:</label>
+                            <input type="number" class="form-control" id="interest" name="interest" >
+                        </div>
+                        <button type="submit" formmethod="post" class="btn btn-primary">Next</button>
+                    </form>
                 </div>
             </div>
         </div>
     </body>
 </html>
+
 }

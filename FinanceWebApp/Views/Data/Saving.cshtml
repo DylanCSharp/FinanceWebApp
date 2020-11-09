@@ -16,7 +16,7 @@
         <div class="container-fluid">
             <div class="card border-0 shadow my-5">
                 <div class="card-body p-5">
-                    <h1 class="font-weight-light text-center">Login to your account!</h1>
+                    <h1 class="font-weight-light text-center">Make a Saving Calculation!</h1>
                     <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
                     <hr />
                     <form>
@@ -36,7 +36,7 @@
                             <label for="inputReason">Reason to save the amount *</label>
                             <input type="text" maxlength="255" id="inputReason" class="form-control" name="reason" required />
                         </div>
-                        <div>
+                        <div class="text-center">
                             <button class="btn btn-secondary" formmethod="post" type="submit">Calculate</button>
                         </div>
                     </form>

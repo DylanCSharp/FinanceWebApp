@@ -5,14 +5,14 @@ using System.Text;
 
 namespace FinanceLibrary
 {
-    public abstract class General
+    public abstract class GeneralExpense
     {
-        public General()
+        public GeneralExpense()
         {
             
         }
 
-        public General(double grossIncome, double taxDeducted, double groceries, double waterLights, double travelCosts, double phoneCosts, double otherExpenses)
+        public GeneralExpense(double grossIncome, double taxDeducted, double groceries, double waterLights, double travelCosts, double phoneCosts, double otherExpenses)
         {
             GrossIncome = grossIncome;
             TaxDeducted = taxDeducted;

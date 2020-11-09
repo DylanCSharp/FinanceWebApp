@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FinanceLibrary
 {
-    public class RentalExpense : General
+    public class RentalExpense : GeneralExpense
     {
         public RentalExpense(double monthlyRental)
         {

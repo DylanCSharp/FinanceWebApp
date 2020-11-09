@@ -55,7 +55,7 @@ namespace FinanceWebApp.Controllers
 
                     if (validUser == true)
                     {
-                        TempData["LoggedIn"] = user.UserFullname + ", you are logged in";
+                        TempData["LoggedIn"] = user.UserFullname + ", you are logged in.";
                         HttpContext.Session.SetString("LoggedInUser", email);
                         return RedirectToAction("Index", "Home");
                     }
@@ -64,8 +64,7 @@ namespace FinanceWebApp.Controllers
                         //Showing the user they have entered invalid credentials for the username
                         ViewBag.Error = "Username or password is invalid!";
                         return View();
-                    }
-                    
+                    }  
                 }
                 else
                 {

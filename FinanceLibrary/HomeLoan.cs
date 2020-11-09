@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FinanceLibrary
 {
-    public class HomeLoan : General
+    public class HomeLoan : GeneralExpense
     {
         public HomeLoan()
         {
