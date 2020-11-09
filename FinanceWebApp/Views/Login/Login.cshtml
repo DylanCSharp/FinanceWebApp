@@ -17,9 +17,12 @@
                     <h1 class="font-weight-light text-center">Login to your account!</h1>
                     <h4 class="font-weight-light text-center">@TempData["Registered"]</h4>
                     <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
-                    <h4 class="font-weight-light text-center">@ViewBag.LoggedIn@if (ViewBag.LoggedIn != null)
-                    {<a asp-action="Index" asp-controller="Home">Back to Home Page</a>}</h4>
+                    <h4 class="font-weight-light text-center">
+                        @ViewBag.LoggedIn@if (ViewBag.LoggedIn != null)
+                    {<a asp-action="Index" asp-controller="Home">Back to Home Page</a>}
+                    </h4>
                     <h4 class="font-weight-light text-center">@TempData["LoggedOut"]</h4>
+                    <h4 class="font-weight-light text-center">@TempData["LoginFirst"]</h4>
                     <hr />
                     <form>
                         <div class="form-group">

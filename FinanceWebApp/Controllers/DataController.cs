@@ -5,11 +5,23 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FinanceLibrary;
+using Microsoft.Data.SqlClient;
+using FinanceWebApp.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace FinanceWebApp.Controllers
 {
     public class DataController : Controller
     {
+        readonly FinanceApplicationContext _context;
+        readonly IConfiguration _configuration;
+
+        public DataController(FinanceApplicationContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
+
         [HttpGet]
         public IActionResult General()
         {
@@ -19,8 +31,8 @@ namespace FinanceWebApp.Controllers
             }
             else
             {
-                ViewBag.Error = "You have not logged in";
-                return View();
+                TempData["LoginFirst"] = "You have not logged in";
+                return RedirectToAction("Login", "Login");
             }
         }
 
@@ -39,8 +51,8 @@ namespace FinanceWebApp.Controllers
             }
             else
             {
-                ViewBag.Error = "You have not logged in";
-                return View();
+                TempData["LoginFirst"] = "You have not logged in";
+                return RedirectToAction("Login", "Login");
             }
         }
 
@@ -59,15 +71,24 @@ namespace FinanceWebApp.Controllers
             }
             else
             {
-                ViewBag.Error = "You have not logged in";
-                return View();
+                TempData["LoginFirst"] = "You have not logged in";
+                return RedirectToAction("Login", "Login");
             }
         }
 
         [HttpPost]
         public IActionResult Car(string modelmake,double purchase, double deposit, int? interest, double insurance)
         {
-            return RedirectToAction("Car", "Data");
+            try
+            {
+
+                return RedirectToAction("Car", "Data");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
+            }
         }
         
         [HttpGet]
@@ -79,17 +100,63 @@ namespace FinanceWebApp.Controllers
             }
             else
             {
-                ViewBag.Error = "You have not logged in";
-                return View();
+                TempData["LoginFirst"] = "You have not logged in";
+                return RedirectToAction("Login", "Login");
             }
         }
 
         [HttpPost]
         public IActionResult Saving(double amount, double years, string reason, double interest)
         {
-            Saving saving = new Saving(amount, years, reason, interest);
-            ViewBag.Error = saving.MonthsToSave().ToString();
-            return View();
+            try
+            {
+                Saving saving = new Saving(amount, years, reason, interest);
+
+                SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("FinanceDatabase"));
+                conn.Open();
+
+                var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
+                int userID = user.UsersId;
+
+                string query = "INSERT INTO SAVINGS VALUES ("+ userID +", "+amount+", "+Convert.ToInt32(years)+", '"+reason+"', "+Convert.ToInt32(interest)+", "+saving.MonthsToSave()+");";
+
+                SqlCommand command = new SqlCommand(query, conn);
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                conn.Close();
+                command.Dispose();
+                dataReader.Close();
+
+                return RedirectToAction("SaveList", "Data");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error: " + ex.Message;
+                return View();
+            }  
+        }
+
+        [HttpGet]
+        public IActionResult SaveList()
+        {
+            if (HttpContext.Session.GetString("LoggedInUser") != null)
+            {
+                var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
+                int userID = user.UsersId;
+
+                var history = _context.Savings.Where(x => x.UsersId == userID).FirstOrDefault();
+                if (history == null)
+                {
+                    ViewBag.History = "No History!";
+                }
+                
+                return View(_context.Savings.Where(x => x.UsersId.Equals(userID)));
+            }
+            else
+            {
+                TempData["LoginFirst"] = "You have not logged in";
+                return RedirectToAction("Login", "Login");
+            }
         }
     }
 }
