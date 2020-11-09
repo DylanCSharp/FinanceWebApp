@@ -18,17 +18,17 @@
                     <hr />
                     <form>
                         <div class="form-group">
-                            <label for="inputFull">Full Name *</label>
-                            <input type="text" class="form-control" id="inputFull" name="full" required>
+                            <label for="inputEmail">Email address *</label>
+                            <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" name="email" onfocusout="this.value = removeSpaces(this.value);" required>
                             <small id="safeinfo" class="form-text text-muted">We'll never share your information with anyone else.</small>
                         </div>
                         <div class="form-group">
-                            <label for="inputNumber">Cellphone Number *</label>
-                            <input type="tel" class="form-control" id="inputNumber" name="number" pattern="[0-9]{10}" required>
+                            <label for="inputFull">Full Name *</label>
+                            <input type="text" class="form-control" id="inputFull" name="fullname" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail">Email address *</label>
-                            <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" name="email" onfocusout="this.value = removeSpaces(this.value);" required>
+                            <label for="inputNumber">Cellphone Number *</label>
+                            <input type="tel" class="form-control" id="inputNumber" name="phone" pattern="[0-9]{10}" required>
                         </div>
                         <div class="form-group">
                             <label for="inputPassword">Password *</label>
