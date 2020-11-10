@@ -14,9 +14,12 @@ namespace FinanceWebApp.Controllers
 {
     public class DataController : Controller
     {
+
         readonly FinanceApplicationContext _context;
         readonly IConfiguration _configuration;
 
+        //Instatiating the dbcontext so that we can read from it.
+        //Instatiating the Iconfiguration import so that we can get our connection string without hardcoding it
         public DataController(FinanceApplicationContext context, IConfiguration configuration)
         {
             _context = context;
@@ -28,18 +31,21 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                //Making sure the user is logged in before having access to this view
                 if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
                     return View();
                 }
                 else
                 {
+                    //Redirecting the user to the login page so that they can access the views
                     TempData["LoginFirst"] = "You have not logged in";
                     return RedirectToAction("Login", "Login");
                 }
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -48,8 +54,11 @@ namespace FinanceWebApp.Controllers
         [HttpPost]
         public IActionResult General(double income, double tax, double groceries, double waterlights, double travel, double phone, double other)
         {
+            //FOR POST METHODS WE DO NOT HAVE TO CHECK IF THE USER IS LOGGED IN, 
+            //BECAUSE IN ORDER TO GET TO POST METHOD, THEY HAVE TO BE LOGGED IN, THEREFORE WE DONT WASTE TIME CHECKING IF THE USER IS LOGGED IN FOR POST METHODS
             try
             {
+                //Making sure that the user enters the correct values and that they make sense
                 if (income <= 0 || tax <= 0 || groceries <= 0 || waterlights <= 0)
                 {
                     ViewBag.Error = "Values cannot be 0";
@@ -62,6 +71,7 @@ namespace FinanceWebApp.Controllers
                 }
                 else
                 {
+                    //Setting the abstract class fields to their specific values so that calculations can be made
                     GeneralExpense.GrossIncome = income;
                     GeneralExpense.TaxDeducted = tax;
                     GeneralExpense.Groceries = groceries;
@@ -75,6 +85,7 @@ namespace FinanceWebApp.Controllers
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -85,6 +96,7 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                //Making sure the user is logged in before having access to this view
                 if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
                     if (GeneralExpense.GrossIncome <= 0)
@@ -99,12 +111,14 @@ namespace FinanceWebApp.Controllers
                 }
                 else
                 {
+                    //Redirecting the user to the login page so that they can access the views
                     TempData["LoginFirst"] = "You have not logged in";
                     return RedirectToAction("Login", "Login");
                 }
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -113,6 +127,8 @@ namespace FinanceWebApp.Controllers
         [HttpPost]
         public IActionResult Home(double purchase, double deposit, double interest, double monthsrepay, double monthlyRent)
         {
+            //FOR POST METHODS WE DO NOT HAVE TO CHECK IF THE USER IS LOGGED IN, 
+            //BECAUSE IN ORDER TO GET TO POST METHOD, THEY HAVE TO BE LOGGED IN, THEREFORE WE DONT WASTE TIME CHECKING IF THE USER IS LOGGED IN FOR POST METHODS
             try
             {
                 if (monthlyRent != 0)
@@ -121,6 +137,7 @@ namespace FinanceWebApp.Controllers
                 }
                 if (deposit <= purchase)
                 {
+                    //Setting the library values to the values recieved from the view
                     HomeLoan homeLoan = new HomeLoan(purchase, deposit, interest, monthsrepay);
                     RentalExpense rentalExpense = new RentalExpense(monthlyRent);
 
@@ -134,6 +151,7 @@ namespace FinanceWebApp.Controllers
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -144,13 +162,16 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                //Making sure the user is logged in before having access to this view
                 if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
+                    //Making sure the user has entered values for the previous page, this is so that an accurate write to the database is made
                     if (GeneralExpense.GrossIncome <= 0)
                     {
                         TempData["GeneralFirst"] = "You need to fill in General Expenses before continuing.";
                         return RedirectToAction("General", "Data");
                     }
+                    //Making sure the user has entered values for the previous page, this is so that an accurate write to the database is made
                     else if (HomeLoan.HomePurchasePrice == 0 && RentalExpense.MonthlyRental == 0)
                     {
                         TempData["HomeFirst"] = "You need to fill in Home Expenses before continuing.";
@@ -163,12 +184,14 @@ namespace FinanceWebApp.Controllers
                 }
                 else
                 {
+                    //Redirecting the user to the login page so that they can access the views
                     TempData["LoginFirst"] = "You have not logged in";
                     return RedirectToAction("Login", "Login");
                 }
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -177,6 +200,11 @@ namespace FinanceWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Car(string carmodelmake, double carpurchase, double cardeposit, double carinterest, double carinsurance)
         {
+            //FOR POST METHODS WE DO NOT HAVE TO CHECK IF THE USER IS LOGGED IN, 
+            //BECAUSE IN ORDER TO GET TO POST METHOD, THEY HAVE TO BE LOGGED IN, THEREFORE WE DONT WASTE TIME CHECKING IF THE USER IS LOGGED IN FOR POST METHODS
+
+
+            //MAKING USE OF ASYNCHRONOUS TASKS SO THAT WHEN A THREAD IS AVAILABLE IT CAN EXECUTE THE NEXT BIT OF CODE
             try
             {
                 if (cardeposit <= carpurchase)
@@ -205,6 +233,8 @@ namespace FinanceWebApp.Controllers
                     //This is the total costs table query that recieves most of the methods created by the library 
                     string queryAddCosts = "INSERT INTO COST (USERS_ID, NORMAL_EXPENSES, FINAL_INCOME, POST_DEDUCTIONS, SPENDABLE_INCOME) VALUES (" + userID + ", '" + Math.Round(GeneralExpense.NormalExpenses(),2) + "', '" + Math.Round(GeneralExpense.FinalIncome(),2) + "', '" + Math.Round(GeneralExpense.AvailableMoneyAfterDeductions(),2) + "', '" + Math.Round(GeneralExpense.SpendableIncome(),2) + "');";
 
+
+                    //MAKING USE OF ASYNCHRONOUS TASKS SO THAT WHEN A THREAD IS AVAILABLE IT CAN EXECUTE THE NEXT BIT OF CODE
                     //inserting the query add car
                     SqlCommand commandTwo = new SqlCommand(queryAddCar, conn);
                     SqlDataReader dataReaderTwo = await commandTwo.ExecuteReaderAsync();
@@ -228,6 +258,8 @@ namespace FinanceWebApp.Controllers
                     SqlDataReader dataReaderFive = await commandFive.ExecuteReaderAsync();
                     await commandFive.DisposeAsync();
                     await dataReaderFive.CloseAsync();
+
+                    //Closing the database connection
                     await conn.CloseAsync();
 
 
@@ -243,7 +275,7 @@ namespace FinanceWebApp.Controllers
                     GeneralExpense.PhoneCosts = 0;
                     GeneralExpense.OtherExpenses = 0;
 
-                    TempData["DataCaptured"] = "Data has been captured!";
+                    TempData["DataCaptured"] = "New Data has been captured!";
                     return RedirectToAction("SummaryData", "Data");
                 }
                 else
@@ -254,6 +286,7 @@ namespace FinanceWebApp.Controllers
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -264,18 +297,21 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                //Making sure the user is logged in before having access to this view
                 if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
                     return View();
                 }
                 else
                 {
+                    //Redirecting the user to the login page so that they can access the views
                     TempData["LoginFirst"] = "You have not logged in";
                     return RedirectToAction("Login", "Login");
                 }
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }
@@ -284,6 +320,8 @@ namespace FinanceWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Saving(double amount, double years, string reason, double interest)
         {
+            //FOR POST METHODS WE DO NOT HAVE TO CHECK IF THE USER IS LOGGED IN, 
+            //BECAUSE IN ORDER TO GET TO POST METHOD, THEY HAVE TO BE LOGGED IN, THEREFORE WE DONT WASTE TIME CHECKING IF THE USER IS LOGGED IN FOR POST METHODS
             try
             {
                 if (amount <= 0 || years <= 0 || interest <= 0)
@@ -294,6 +332,8 @@ namespace FinanceWebApp.Controllers
 
                 Saving saving = new Saving(amount, years, reason, interest);
 
+
+                //MAKING USE OF ASYNCHRONOUS TASKS SO THAT WHEN A THREAD IS AVAILABLE IT CAN EXECUTE THE NEXT BIT OF CODE
                 SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("FinanceDatabase"));
                 await conn.OpenAsync();
 
@@ -305,6 +345,7 @@ namespace FinanceWebApp.Controllers
                 SqlCommand command = new SqlCommand(query, conn);
                 SqlDataReader dataReader = await command.ExecuteReaderAsync();
 
+                //Closing all asynchronous connections to the database
                 await conn.CloseAsync();
                 await command.DisposeAsync();
                 await dataReader.CloseAsync();
@@ -313,6 +354,7 @@ namespace FinanceWebApp.Controllers
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.Error = "Error: " + ex.Message;
                 return View();
             }  
@@ -323,11 +365,13 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                //Making sure the user is logged in before having access to this view
                 if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
                     var user = await _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefaultAsync();
                     int userID = user.UsersId;
 
+                    //Checking if the user has history of data logs
                     var history = await _context.Savings.Where(x => x.UsersId == userID).FirstOrDefaultAsync();
                     if (history == null)
                     {
@@ -335,24 +379,99 @@ namespace FinanceWebApp.Controllers
                     }
 
                     return View(_context.Savings.Where(x => x.UsersId.Equals(userID)));
-
                 }
                 else
                 {
+                    //Redirecting the user to the login page so that they can access the views
                     TempData["LoginFirst"] = "You have not logged in";
                     return RedirectToAction("Login", "Login");
                 }
             }
             catch (Exception ex)
             {
+                //Catching exceptions we might have not catered for in our code
                 ViewBag.History = "Error: " + ex.Message;
                 return View();
             }
         }
 
-        public IActionResult SummaryData()
+        [HttpGet]
+        public async Task<IActionResult> SummaryData()
         {
-           return View(_context.Cost);
+            try
+            {
+                //Making sure the user is logged in before having access to this view
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
+                {
+                    var user = await _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefaultAsync();
+                    int userID = user.UsersId;
+
+                    //Checking if the user has history of data logs
+                    var history = await _context.Cost.Where(x => x.UsersId == userID).FirstOrDefaultAsync();
+                    if (history == null)
+                    {
+                        ViewBag.History = "No History!";
+                    }
+
+                    return View(_context.Cost.Where(x => x.UsersId == userID));
+                }
+                else
+                {
+                    //Redirecting the user to the login page so that they can access the views
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+            catch (Exception ex)
+            {
+                //Catching exceptions we might have not catered for in our code
+                ViewBag.Error = "Error:" + ex.Message;
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SummaryData(int? id)
+        {
+            //FOR POST METHODS WE DO NOT HAVE TO CHECK IF THE USER IS LOGGED IN, 
+            //BECAUSE IN ORDER TO GET TO POST METHOD, THEY HAVE TO BE LOGGED IN, THEREFORE WE DONT WASTE TIME CHECKING IF THE USER IS LOGGED IN FOR POST METHODS
+            try
+            {
+                TempData["SummaryID"] = id;
+                return RedirectToAction("SummaryFinal", "Data");
+            }
+            catch (Exception ex)
+            {
+                //Catching exceptions we might have not catered for in our code
+                ViewBag.Error = "Error:" + ex.Message;
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult SummaryFinal()
+        {
+            try
+            {
+                //Making sure the user is logged in before having access to this view
+                if (HttpContext.Session.GetString("LoggedInUser") != null)
+                {
+                    int id = Convert.ToInt32(TempData["SummaryID"]);
+                    return View(_context.Cost.Where(x => x.CostsId == id));
+                }
+                else
+                {
+                    //Redirecting the user to the login page so that they can access the views
+                    TempData["LoginFirst"] = "You have not logged in";
+                    return RedirectToAction("Login", "Login");
+                }
+            }
+            catch (Exception ex)
+            {
+                //Catching exceptions we might have not catered for in our code
+                ViewBag.Error = "Error:" + ex.Message;
+                return View();
+            }
         }
     }
 }

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<FinanceWebApp.Models.Cost>
+@{
+    ViewData["Title"] = "Final Summary";
+}
+
+@{
+    <!doctype html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="~/css/site.css">
+    </head>
+    <body>
+        <form>
+            <div class="container">
+                <div class="card border-0 shadow my-5">
+                    <div class="card-body p-5">
+                        <h1 class="font-weight-light text-center">Final Summary!</h1>
+                        <h4 class="font-weight-light text-center">Calculations for the inputted data!</h4>
+                        <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
+                        <hr />
+                        @foreach (var item in Model)
+                        {
+                            <div class="table-responsive-xl">
+                                <table class="table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">
+                                                Income: (Gross -Tax)
+                                            </th>
+                                            <th scope="col">
+                                                Normal Expenses Total:
+                                            </th>
+                                            <th scope="col">
+                                                Net Income : (Income - Expenses)
+                                            </th>
+                                            <th scope="col">
+                                                Spendable Income: (Post Deductions)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>
+                                                R @Html.DisplayFor(modelItem => item.FinalIncome)
+                                            </td>
+                                            <td>
+                                                R @Html.DisplayFor(modelItem => item.NormalExpenses)
+                                            </td>
+                                            <td>
+                                                R @Html.DisplayFor(modelItem => item.SpendableIncome)
+                                            </td>
+                                            <td>
+                                                R @Html.DisplayFor(modelItem => item.PostDeductions)
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <div style="height: 150px"></div>
+                </div>
+            </div>
+        </form>     
+    </body>
+</html>
+
+                        }

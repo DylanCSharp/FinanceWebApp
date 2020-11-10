@@ -1,6 +1,61 @@
 ﻿@model IEnumerable<FinanceWebApp.Models.Cost>
+
 @{
-    ViewData["Title"] = "Summary";
+    ViewData["Title"] = "Summary Data";
 }
 
-<h1>@TempData["DataCaptured"]</h1>
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+        <div class="container">
+            <div class="card border-0 shadow my-5">
+                <div class="card-body p-5">
+                    <h1 class="font-weight-light text-center">Pick a Calculation you made to view its summary!</h1>
+                    <h4 class="font-weight-light text-center">@ViewBag.Error</h4>
+                    <h4 class="font-weight-light text-center">@ViewBag.History</h4>
+                    <h4 class="font-weight-light text-center">@TempData["DataCaptured"]</h4>
+                    <hr />
+                    <h4 class="font-weight-light text-center">These are all your final cost ID's</h4>
+                    @foreach (var item in Model)
+                    {
+                        <div class="table-responsive-xl">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">
+                                            Cost ID:
+                                        </th>
+                                        <th>
+
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CostsId)
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <form>
+                                                <button type="submit" name="id" value="@item.CostsId" class="btn btn-secondary" formmethod="post">Summary</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+                </div>
+            </div>
+    </body>
+</html>

@@ -29,6 +29,7 @@ namespace FinanceWebApp.Controllers
         {
             if (HttpContext.Session.GetString("LoggedInUser") != null)
             {
+                //Telling the user they are alreadt logged in if they access this page after they log in
                 ViewBag.LoggedIn = "You are already logged in.";
                 return View();
             }
@@ -56,6 +57,7 @@ namespace FinanceWebApp.Controllers
 
                     if (validUser == true)
                     {
+                        //Showing the user they have logged in
                         TempData["LoggedIn"] = user.UserFullname + ", you are logged in.";
                         HttpContext.Session.SetString("LoggedInUser", email);
                         return RedirectToAction("Index", "Home");
@@ -86,6 +88,7 @@ namespace FinanceWebApp.Controllers
         {
             if (HttpContext.Session.GetString("LoggedInUser") != null)
             {
+                //If the user tries to register while logged in, they will be told they are already logged in
                 ViewBag.Error = "You are already logged in.";
                 return View();
             }
@@ -101,6 +104,7 @@ namespace FinanceWebApp.Controllers
             //Using the libray that helps with hashing and salting Scrypt.NET Nuget Package Added
             ScryptEncoder encoder = new ScryptEncoder();
 
+            //MAKING USE OF ASYNCHRONOUS AND AWAIT TO MAXIMISE PERFORMANCE AND SCALABILITY
             try
             {
                 
@@ -171,6 +175,7 @@ namespace FinanceWebApp.Controllers
         {
             try
             {
+                //Clearing the session variable so that another person can log in to another account
                 HttpContext.Session.Clear();
                 TempData["LoggedOut"] = "You have been logged out!";
                 return RedirectToAction("Login", "Login");

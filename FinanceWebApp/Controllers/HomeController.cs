@@ -11,13 +11,10 @@ namespace FinanceWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        
+        //Showing the home page of the application
         public IActionResult Index()
         {
             return View();
         }
-
-        
-
     }
 }
