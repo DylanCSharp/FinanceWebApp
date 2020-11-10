@@ -7,10 +7,10 @@ namespace FinanceWebApp.Models
     {
         public int CostsId { get; set; }
         public int UsersId { get; set; }
-        public decimal NormalExpenses { get; set; }
-        public decimal FinalIncome { get; set; }
-        public decimal PostDeductions { get; set; }
-        public decimal SpendableIncome { get; set; }
+        public string NormalExpenses { get; set; }
+        public string FinalIncome { get; set; }
+        public string PostDeductions { get; set; }
+        public string SpendableIncome { get; set; }
 
         public virtual Users Users { get; set; }
     }

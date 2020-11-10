@@ -35,7 +35,7 @@ namespace FinanceWebApp.Models
             modelBuilder.Entity<BuyCar>(entity =>
             {
                 entity.HasKey(e => e.IdCar)
-                    .HasName("PK__BUY_CAR__2BF8FA1E75A3B15D");
+                    .HasName("PK__BUY_CAR__2BF8FA1E63182EAF");
 
                 entity.ToTable("BUY_CAR");
 
@@ -43,11 +43,11 @@ namespace FinanceWebApp.Models
 
                 entity.Property(e => e.CarDeposit)
                     .HasColumnName("CAR_DEPOSIT")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.CarInsurance)
                     .HasColumnName("CAR_INSURANCE")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.CarInterest).HasColumnName("CAR_INTEREST");
 
@@ -58,15 +58,17 @@ namespace FinanceWebApp.Models
 
                 entity.Property(e => e.CarPurchase)
                     .HasColumnName("CAR_PURCHASE")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.MonthlyCarRepayment)
                     .HasColumnName("MONTHLY_CAR_REPAYMENT")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TotalCarRepayment)
                     .HasColumnName("TOTAL_CAR_REPAYMENT")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.UsersId).HasColumnName("USERS_ID");
 
@@ -74,33 +76,41 @@ namespace FinanceWebApp.Models
                     .WithMany(p => p.BuyCar)
                     .HasForeignKey(d => d.UsersId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__BUY_CAR__USERS_I__60A75C0F");
+                    .HasConstraintName("FK__BUY_CAR__USERS_I__1332DBDC");
             });
 
             modelBuilder.Entity<Cost>(entity =>
             {
                 entity.HasKey(e => e.CostsId)
-                    .HasName("PK__COST__1F8529622706F07C");
+                    .HasName("PK__COST__1F8529625A615460");
 
                 entity.ToTable("COST");
 
                 entity.Property(e => e.CostsId).HasColumnName("COSTS_ID");
 
                 entity.Property(e => e.FinalIncome)
+                    .IsRequired()
                     .HasColumnName("FINAL_INCOME")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.NormalExpenses)
+                    .IsRequired()
                     .HasColumnName("NORMAL_EXPENSES")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.PostDeductions)
+                    .IsRequired()
                     .HasColumnName("POST_DEDUCTIONS")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SpendableIncome)
+                    .IsRequired()
                     .HasColumnName("SPENDABLE_INCOME")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.UsersId).HasColumnName("USERS_ID");
 
@@ -108,13 +118,13 @@ namespace FinanceWebApp.Models
                     .WithMany(p => p.Cost)
                     .HasForeignKey(d => d.UsersId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__COST__USERS_ID__693CA210");
+                    .HasConstraintName("FK__COST__USERS_ID__10566F31");
             });
 
             modelBuilder.Entity<GeneralExpenses>(entity =>
             {
                 entity.HasKey(e => e.IdExpenses)
-                    .HasName("PK__GENERAL___91E35883B26F793A");
+                    .HasName("PK__GENERAL___91E35883C9E83194");
 
                 entity.ToTable("GENERAL_EXPENSES");
 
@@ -122,45 +132,45 @@ namespace FinanceWebApp.Models
 
                 entity.Property(e => e.Groceries)
                     .HasColumnName("GROCERIES")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.GrossIncome)
                     .HasColumnName("GROSS_INCOME")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Other)
                     .HasColumnName("OTHER")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Phone)
                     .HasColumnName("PHONE")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.TaxDeducted)
                     .HasColumnName("TAX_DEDUCTED")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Travel)
                     .HasColumnName("TRAVEL")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.UsersId).HasColumnName("USERS_ID");
 
                 entity.Property(e => e.WaterLights)
                     .HasColumnName("WATER_LIGHTS")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.HasOne(d => d.Users)
                     .WithMany(p => p.GeneralExpenses)
                     .HasForeignKey(d => d.UsersId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GENERAL_E__USERS__6383C8BA");
+                    .HasConstraintName("FK__GENERAL_E__USERS__7C4F7684");
             });
 
             modelBuilder.Entity<RentBuyProperty>(entity =>
             {
                 entity.HasKey(e => e.IdRentBuy)
-                    .HasName("PK__RENT_BUY__6BC779B2485D2E3A");
+                    .HasName("PK__RENT_BUY__6BC779B2939C38DE");
 
                 entity.ToTable("RENT_BUY_PROPERTY");
 
@@ -168,11 +178,12 @@ namespace FinanceWebApp.Models
 
                 entity.Property(e => e.MonthlyHomeRepayment)
                     .HasColumnName("MONTHLY_HOME_REPAYMENT")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.PropertyDeposit)
                     .HasColumnName("PROPERTY_DEPOSIT")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.PropertyInterest).HasColumnName("PROPERTY_INTEREST");
 
@@ -180,15 +191,16 @@ namespace FinanceWebApp.Models
 
                 entity.Property(e => e.PropertyPurchase)
                     .HasColumnName("PROPERTY_PURCHASE")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.RentMonthly)
                     .HasColumnName("RENT_MONTHLY")
-                    .HasColumnType("money");
+                    .HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.TotalHomeRepayment)
                     .HasColumnName("TOTAL_HOME_REPAYMENT")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.UsersId).HasColumnName("USERS_ID");
 
@@ -196,7 +208,7 @@ namespace FinanceWebApp.Models
                     .WithMany(p => p.RentBuyProperty)
                     .HasForeignKey(d => d.UsersId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__RENT_BUY___USERS__66603565");
+                    .HasConstraintName("FK__RENT_BUY___USERS__0D7A0286");
             });
 
             modelBuilder.Entity<Savings>(entity =>
@@ -206,8 +218,10 @@ namespace FinanceWebApp.Models
                 entity.Property(e => e.SavingsId).HasColumnName("SAVINGS_ID");
 
                 entity.Property(e => e.MonthlyAmountTosave)
+                    .IsRequired()
                     .HasColumnName("MONTHLY_AMOUNT_TOSAVE")
-                    .HasColumnType("money");
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SavingAmount)
                     .HasColumnName("SAVING_AMOUNT")
@@ -229,7 +243,7 @@ namespace FinanceWebApp.Models
                     .WithMany(p => p.Savings)
                     .HasForeignKey(d => d.UsersId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__SAVINGS__USERS_I__6C190EBB");
+                    .HasConstraintName("FK__SAVINGS__USERS_I__0A9D95DB");
             });
 
             modelBuilder.Entity<Users>(entity =>

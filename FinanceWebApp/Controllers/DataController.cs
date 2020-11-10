@@ -8,6 +8,7 @@ using FinanceLibrary;
 using Microsoft.Data.SqlClient;
 using FinanceWebApp.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceWebApp.Controllers
 {
@@ -174,16 +175,15 @@ namespace FinanceWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Car(string carmodelmake, double carpurchase, double cardeposit, double carinterest, double carinsurance)
+        public async Task<IActionResult> Car(string carmodelmake, double carpurchase, double cardeposit, double carinterest, double carinsurance)
         {
-            //REMEMBER TO RESET LIBRARY STATS BACK TO 0
             try
             {
                 if (cardeposit <= carpurchase)
                 {
                     CarLoan carLoan = new CarLoan(carmodelmake, carpurchase, cardeposit, carinterest, carinsurance);
 
-                    var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
+                    var user = await _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefaultAsync();
                     int userID = user.UsersId;
 
                     var carSummary = new CarLoan();
@@ -192,46 +192,44 @@ namespace FinanceWebApp.Controllers
 
                     SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("FinanceDatabase"));
 
-                    conn.Open();
+                    await conn.OpenAsync();
 
                     //This query adds the car to the car table in the database
-                    string queryAddCar = "INSERT INTO BUY_CAR VALUES (" + userID + ", '" + CarLoan.CarModelMake + "', " + CarLoan.CarPurchasePrice + ", " + CarLoan.CarDeposit + ", " + CarLoan.CarInterestRate + ", " + CarLoan.CarInsurancePremium + ", " + carSummary.CarLoanRepaymentTotal() + ", " + carSummary.CarLoanRepaymentMonthly() + ");";
+                    string queryAddCar = "INSERT INTO BUY_CAR (USERS_ID, CAR_MAKE, CAR_PURCHASE, CAR_DEPOSIT, CAR_INTEREST, CAR_INSURANCE, TOTAL_CAR_REPAYMENT, MONTHLY_CAR_REPAYMENT) VALUES (" + userID + ", '" + carmodelmake + "', " + carpurchase + ", " + cardeposit + ", " + carinterest + ", " + carinsurance + ", '" + Math.Round(carSummary.CarLoanRepaymentTotal(),2) + "', '" +Math.Round(carSummary.CarLoanRepaymentMonthly(),2) + "');";
 
                     //This query adds the home loan values to the rent and buy table in the database
-                    string queryAddHome = "INSERT INTO RENT_BUY_PROPERTY VALUES (" + userID + ", " + RentalExpense.MonthlyRental + ", " + HomeLoan.HomePurchasePrice + ", " + HomeLoan.HomeTotalDeposit + ", " + HomeLoan.HomeInterestRate + ", " + HomeLoan.HomeMonthsRepay + ", " + homeSummary.TotalHomeLoanRepayment() + ", " + homeSummary.MonthlyHomeLoanRepayment() + ");";
+                    string queryAddHome = "INSERT INTO RENT_BUY_PROPERTY (USERS_ID, RENT_MONTHLY, PROPERTY_PURCHASE, PROPERTY_DEPOSIT, PROPERTY_INTEREST, PROPERTY_MONTHSREPAY, TOTAL_HOME_REPAYMENT, MONTHLY_HOME_REPAYMENT) VALUES(" + userID + ", " + RentalExpense.MonthlyRental + ", " + HomeLoan.HomePurchasePrice + ", " + HomeLoan.HomeTotalDeposit + ", " + HomeLoan.HomeInterestRate + ", " + HomeLoan.HomeMonthsRepay + ", '" + Math.Round(homeSummary.TotalHomeLoanRepayment(),2) + "', '" + Math.Round(homeSummary.MonthlyHomeLoanRepayment(),2) + "'); ";
 
                     //This query adds all general expenses to the general expenses table
-                    string queryAddGeneral = "INSERT INTO GENERAL_EXPENSES VALUES (" + userID + ", " + GeneralExpense.GrossIncome + ", " + GeneralExpense.TaxDeducted + ", " + GeneralExpense.Groceries + ", " + GeneralExpense.WaterLights + ", " + GeneralExpense.TravelCosts + ", " + GeneralExpense.PhoneCosts + ", " + GeneralExpense.OtherExpenses + ");";
-
+                    string queryAddGeneral = "INSERT INTO GENERAL_EXPENSES (USERS_ID, GROSS_INCOME, TAX_DEDUCTED, GROCERIES, WATER_LIGHTS, TRAVEL, PHONE, OTHER) VALUES (" + userID + ", " + GeneralExpense.GrossIncome + ", " + GeneralExpense.TaxDeducted + ", " + GeneralExpense.Groceries + ", " + GeneralExpense.WaterLights + ", " + GeneralExpense.TravelCosts + ", " + GeneralExpense.PhoneCosts + ", " + GeneralExpense.OtherExpenses + ");";
                     //This is the total costs table query that recieves most of the methods created by the library 
-                    string queryAddCosts = "INSERT INTO COST VALUES (" + userID + ", " + GeneralExpense.NormalExpenses() + ", " + GeneralExpense.FinalIncome() + ", " + GeneralExpense.AvailableMoneyAfterDeductions() + ", " + GeneralExpense.SpendableIncome() + ");";
+                    string queryAddCosts = "INSERT INTO COST (USERS_ID, NORMAL_EXPENSES, FINAL_INCOME, POST_DEDUCTIONS, SPENDABLE_INCOME) VALUES (" + userID + ", '" + Math.Round(GeneralExpense.NormalExpenses(),2) + "', '" + Math.Round(GeneralExpense.FinalIncome(),2) + "', '" + Math.Round(GeneralExpense.AvailableMoneyAfterDeductions(),2) + "', '" + Math.Round(GeneralExpense.SpendableIncome(),2) + "');";
 
-                    
-                        //inserting the query add car
-                        SqlCommand commandTwo = new SqlCommand(queryAddCar, conn);
-                        SqlDataReader dataReaderTwo = commandTwo.ExecuteReader();
-                        commandTwo.Dispose();
-                        dataReaderTwo.Close();
+                    //inserting the query add car
+                    SqlCommand commandTwo = new SqlCommand(queryAddCar, conn);
+                    SqlDataReader dataReaderTwo = await commandTwo.ExecuteReaderAsync();
+                    await commandTwo.DisposeAsync();
+                    await dataReaderTwo.CloseAsync();
 
-                        //inserting the query add home
-                        SqlCommand commandThree = new SqlCommand(queryAddHome, conn);
-                        SqlDataReader dataReaderThree = commandThree.ExecuteReader();
-                        commandThree.Dispose();
-                        dataReaderThree.Close();
+                    //inserting the query add home
+                    SqlCommand commandThree = new SqlCommand(queryAddHome, conn);
+                    SqlDataReader dataReaderThree = await commandThree.ExecuteReaderAsync();
+                    await commandThree.DisposeAsync();
+                    await dataReaderThree.CloseAsync();
 
-                        //inserting the query add general expenses
-                        SqlCommand commandFour = new SqlCommand(queryAddGeneral, conn);
-                        SqlDataReader dataReaderFour = commandFour.ExecuteReader();
-                        commandFour.Dispose();
-                        dataReaderFour.Close();
+                    //inserting the query add general expenses
+                    SqlCommand commandFour = new SqlCommand(queryAddGeneral, conn);
+                    SqlDataReader dataReaderFour = await commandFour.ExecuteReaderAsync();
+                    await commandFour.DisposeAsync();
+                    await dataReaderFour.CloseAsync();
 
-                        //inserting the query add costs
-                        SqlCommand commandFive = new SqlCommand(queryAddCosts, conn);
-                        SqlDataReader dataReaderFive = commandFive.ExecuteReader();
-                        commandFive.Dispose();
-                        dataReaderFive.Close();
-                        conn.Close();
-                    
+                    //inserting the query add costs
+                    SqlCommand commandFive = new SqlCommand(queryAddCosts, conn);
+                    SqlDataReader dataReaderFive = await commandFive.ExecuteReaderAsync();
+                    await commandFive.DisposeAsync();
+                    await dataReaderFive.CloseAsync();
+                    await conn.CloseAsync();
+
 
                     //Resetting these back to 0 so that other views cannot be accessed pre-maturely
                     var carReset = new CarLoan("", 0, 0, 0, 0);
@@ -284,7 +282,7 @@ namespace FinanceWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Saving(double amount, double years, string reason, double interest)
+        public async Task<IActionResult> Saving(double amount, double years, string reason, double interest)
         {
             try
             {
@@ -297,19 +295,19 @@ namespace FinanceWebApp.Controllers
                 Saving saving = new Saving(amount, years, reason, interest);
 
                 SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("FinanceDatabase"));
-                conn.Open();
+                await conn.OpenAsync();
 
                 var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
                 int userID = user.UsersId;
 
-                string query = "INSERT INTO SAVINGS VALUES ("+ userID +", "+amount+", "+Convert.ToInt32(years)+", '"+reason+"', "+Convert.ToInt32(interest)+", "+saving.MonthsToSave()+");";
+                string query = "INSERT INTO SAVINGS (USERS_ID, SAVING_AMOUNT, SAVING_YEARS, SAVING_REASON, SAVING_INTERESTRATE, MONTHLY_AMOUNT_TOSAVE) VALUES (" + userID + ", " + amount + ", " + years + ", '" + reason + "', "+interest+", '"+Math.Round(saving.MonthsToSave(),2)+"');";
 
                 SqlCommand command = new SqlCommand(query, conn);
-                SqlDataReader dataReader = command.ExecuteReader();
+                SqlDataReader dataReader = await command.ExecuteReaderAsync();
 
-                conn.Close();
-                command.Dispose();
-                dataReader.Close();
+                await conn.CloseAsync();
+                await command.DisposeAsync();
+                await dataReader.CloseAsync();
 
                 return RedirectToAction("SaveList", "Data");
             }
@@ -321,22 +319,23 @@ namespace FinanceWebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult SaveList()
+        public async Task<IActionResult> SaveList()
         {
             try
             {
                 if (HttpContext.Session.GetString("LoggedInUser") != null)
                 {
-                    var user = _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefault();
+                    var user = await _context.Users.Where(x => x.Email.Equals(HttpContext.Session.GetString("LoggedInUser"))).FirstOrDefaultAsync();
                     int userID = user.UsersId;
 
-                    var history = _context.Savings.Where(x => x.UsersId == userID).FirstOrDefault();
+                    var history = await _context.Savings.Where(x => x.UsersId == userID).FirstOrDefaultAsync();
                     if (history == null)
                     {
                         ViewBag.History = "No History!";
                     }
 
                     return View(_context.Savings.Where(x => x.UsersId.Equals(userID)));
+
                 }
                 else
                 {
@@ -349,6 +348,11 @@ namespace FinanceWebApp.Controllers
                 ViewBag.History = "Error: " + ex.Message;
                 return View();
             }
+        }
+
+        public IActionResult SummaryData()
+        {
+           return View(_context.Cost);
         }
     }
 }

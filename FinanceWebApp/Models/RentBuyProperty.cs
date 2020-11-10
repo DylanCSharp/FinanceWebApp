@@ -12,8 +12,8 @@ namespace FinanceWebApp.Models
         public decimal? PropertyDeposit { get; set; }
         public int? PropertyInterest { get; set; }
         public int? PropertyMonthsrepay { get; set; }
-        public decimal? TotalHomeRepayment { get; set; }
-        public decimal? MonthlyHomeRepayment { get; set; }
+        public string TotalHomeRepayment { get; set; }
+        public string MonthlyHomeRepayment { get; set; }
 
         public virtual Users Users { get; set; }
     }

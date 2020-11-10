@@ -6,6 +6,7 @@ using FinanceWebApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Scrypt;
 
@@ -38,7 +39,7 @@ namespace FinanceWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
             //Using the libray that helps with hashing and salting Scrypt.NET Nuget Package Added
             ScryptEncoder encoder = new ScryptEncoder();
@@ -46,7 +47,7 @@ namespace FinanceWebApp.Controllers
             try
             {
                 //Checking if the user exists
-                var user = _context.Users.Where(x => x.Email.Equals(email)).FirstOrDefault();
+                var user = await _context.Users.Where(x => x.Email.Equals(email)).FirstOrDefaultAsync();
 
                 if (user != null)
                 {
@@ -95,7 +96,7 @@ namespace FinanceWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterUser(string email, string password, string fullname, string passwordconfirm, string phone)
+        public async Task<IActionResult> RegisterUser(string email, string password, string fullname, string passwordconfirm, string phone)
         {
             //Using the libray that helps with hashing and salting Scrypt.NET Nuget Package Added
             ScryptEncoder encoder = new ScryptEncoder();
@@ -110,7 +111,7 @@ namespace FinanceWebApp.Controllers
                     if (password.Contains(passwordconfirm))
                     {
                         //Checking if the user already exists within the database
-                        var usernameValid = _context.Users.Where(x => x.Email.Equals(email)).FirstOrDefault();
+                        var usernameValid = await _context.Users.Where(x => x.Email.Equals(email)).FirstOrDefaultAsync();
 
                         //Executing this if statement if the user doesnt exist
                         if (usernameValid == null)
@@ -120,18 +121,18 @@ namespace FinanceWebApp.Controllers
 
                             //Opening up a connection to the database and getting the connection string
                             SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("FinanceDatabase"));
-                            conn.Open();
+                            await conn.OpenAsync();
 
                             //Query for the database to execute, inserting the hashed and salted password 
                             string query = "INSERT INTO USERS VALUES ('" + fullname + "', '" + email + "', '" + hashedPassword + "', '" + phone + "');";
 
                             SqlCommand command = new SqlCommand(query, conn);
-                            SqlDataReader dataReader = command.ExecuteReader();
+                            SqlDataReader dataReader = await command.ExecuteReaderAsync();
 
                             //Closing the connections to database
-                            conn.Close();
-                            command.Dispose();
-                            dataReader.Close();
+                            await conn.CloseAsync();
+                            await command.DisposeAsync();
+                            await dataReader.CloseAsync();
 
                             //Showing the user they have logged in
                             TempData["Registered"] = "You have been successfully registered! Welcome to Finance Expert " + fullname + " !";
@@ -168,9 +169,17 @@ namespace FinanceWebApp.Controllers
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
-            TempData["LoggedOut"] = "You have been logged out!";
-            return RedirectToAction("Login", "Login");
+            try
+            {
+                HttpContext.Session.Clear();
+                TempData["LoggedOut"] = "You have been logged out!";
+                return RedirectToAction("Login", "Login");
+            }
+            catch (Exception ex)
+            {
+                TempData["LoggedOut"] = "Error: " + ex.Message;
+                return RedirectToAction("Login", "Login");
+            }
         }
     }
 }

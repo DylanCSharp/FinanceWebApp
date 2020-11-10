@@ -11,7 +11,7 @@ namespace FinanceWebApp.Models
         public int SavingYears { get; set; }
         public string SavingReason { get; set; }
         public int SavingInterestrate { get; set; }
-        public decimal MonthlyAmountTosave { get; set; }
+        public string MonthlyAmountTosave { get; set; }
 
         public virtual Users Users { get; set; }
     }

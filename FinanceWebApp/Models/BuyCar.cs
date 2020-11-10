@@ -12,8 +12,8 @@ namespace FinanceWebApp.Models
         public decimal? CarDeposit { get; set; }
         public int? CarInterest { get; set; }
         public decimal? CarInsurance { get; set; }
-        public decimal? TotalCarRepayment { get; set; }
-        public decimal? MonthlyCarRepayment { get; set; }
+        public string TotalCarRepayment { get; set; }
+        public string MonthlyCarRepayment { get; set; }
 
         public virtual Users Users { get; set; }
     }
